@@ -1,3 +1,4 @@
+import copy
 
 N = 8
 
@@ -76,8 +77,12 @@ def get_valid_moves(board, player):
                 valid_moves.append((row, col))
     return valid_moves
 
-def heuristic():
-    pass
+def heuristic_weak(board, player):
+    black_score, white_score = get_score(board)
+    if player == BLACK:
+        return black_score - white_score
+    else:
+        return white_score - black_score
 
 def Min_Max_Alpha_Beta_Heuristic_Pruning(board, depth, player, alpha, beta, maximizing_player):
     if depth == 0 or terminal_test(board):
@@ -129,7 +134,7 @@ def play_othello():
     current_player = BLACK
     while True:
         print_board(board)
-        print("Jugador actual:", "Negras" if current_player == BLACK else "Blancas")
+        print("Jugador actual:", "X" if current_player == BLACK else "O")
         
         if current_player == BLACK:
             row, col = get_best_move(board, current_player, 3)
@@ -159,6 +164,5 @@ def play_othello():
                 print("Empate.")
             break
 
-
 if __name__ == "__main__":
-    print_board(initialize_board())
+    play_othello()
