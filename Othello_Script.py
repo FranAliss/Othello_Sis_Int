@@ -42,7 +42,9 @@ def is_valid_move(board, player, row, col):
                 return True
     return False
 
-def make_move(board, player, row, col):
+def make_move(board, player, move):
+    row = move[0]
+    col = move[1]
     if not is_valid_move(board, player, row, col):
         return False
     board[row][col] = player
@@ -86,49 +88,53 @@ def heuristic_weak(board, player):
 
 def Min_Max_Alpha_Beta_Heuristic_Pruning(board, depth, player, alpha, beta, maximizing_player):
     if depth == 0 or terminal_test(board):
-        return heuristic_weak(board, player)
+        return heuristic_weak(board, player), 0
     
     valid_moves = get_valid_moves(board, player)
     
     if maximizing_player:
-        max_eval = float('-inf')
+        max_val = float('-inf')
+        best_move = None
         for move in valid_moves:
             new_board = copy.deepcopy(board)
-            make_move(new_board, player, move[0], move[1])
-            evaluation = Min_Max_Alpha_Beta_Heuristic_Pruning(new_board, depth - 1, player, alpha, beta, False)
-            max_eval = max(max_eval, evaluation)
+            make_move(new_board, player, move)
+            evaluation, best_move = Min_Max_Alpha_Beta_Heuristic_Pruning(new_board, depth - 1, player, alpha, beta, False)
+            
+            if evaluation > max_val:
+                max_val = evaluation
+                best_move = move
+                
             alpha = max(alpha, evaluation)
             if beta <= alpha:
                 break
-        return max_eval
+        return max_val, best_move
     else:
-        min_eval = float('inf')
+        min_val = float('inf')
+        best_move = None
         for move in valid_moves:
             new_board = copy.deepcopy(board)
-            make_move(new_board, -player, move[0], move[1])
-            evaluation = Min_Max_Alpha_Beta_Heuristic_Pruning(new_board, depth - 1, player, alpha, beta, True)
-            min_eval = min(min_eval, evaluation)
+            make_move(new_board, -player, move)
+            evaluation, best_move = Min_Max_Alpha_Beta_Heuristic_Pruning(new_board, depth - 1, player, alpha, beta, True)
+
+            if evaluation < min_val:
+                min_val = evaluation
+                best_move = move
+
             beta = min(beta, evaluation)
             if beta <= alpha:
                 break
-        return min_eval
+        return min_val, best_move
 
 
-def get_best_move(board, player, depth):
+def get_min_max_move(board, player, depth):
     valid_moves = get_valid_moves(board, player)
-    best_move = valid_moves[0]
-    best_eval = float('-inf')
-    
-    for move in valid_moves:
-        new_board = copy.deepcopy(board)
-        make_move(new_board, player, move[0], move[1])
-        evaluation = Min_Max_Alpha_Beta_Heuristic_Pruning(new_board, depth, player, float('-inf'), float('inf'), False)
-        if evaluation > best_eval:
-            best_eval = evaluation
-            best_move = move
-    
-    return best_move
 
+    if len(valid_moves) > 0:
+        eval, best_move = Min_Max_Alpha_Beta_Heuristic_Pruning(board, depth, player, float('-inf'), float('inf'), True)
+        return best_move
+    else:
+        return None
+    
 def play_othello():
     board = initialize_board()
     current_player = BLACK
@@ -136,8 +142,8 @@ def play_othello():
         print_board(board)
         print("Jugador actual:", "X" if current_player == BLACK else "O")
         
-        if current_player == BLACK:
-            row, col = get_best_move(board, current_player, 3)
+        if current_player == WHITE:
+            row, col = get_min_max_move(board, current_player, 3)
         else:
             while True:
                 try:
@@ -150,7 +156,7 @@ def play_othello():
                 except ValueError:
                     print("Entrada no válida. Introduce números válidos.")
         
-        make_move(board, current_player, row, col)
+        make_move(board, current_player, (row,col))
         current_player = -current_player
         
         if terminal_test(board):
