@@ -27,6 +27,7 @@ def print_board(board):
                 row += "O "
         print(row)
 
+
 def is_valid_move(board, player, row, col):
     if board[row][col] != EMPTY:
         return False
@@ -40,7 +41,7 @@ def is_valid_move(board, player, row, col):
                 newColumn += differencColumn
             if 0 <= newRow < N and 0 <= newColumn < N and board[newRow][newColumn] == player:
                 return True
-    return False
+
 
 def make_move(board, player, move):
     row = move[0]
@@ -63,13 +64,16 @@ def make_move(board, player, move):
                     board[flip_row][flip_col] = player
     return True
 
+
 def get_score(board):
     black_score = sum(row.count(BLACK) for row in board)
     white_score = sum(row.count(WHITE) for row in board)
     return black_score, white_score
 
+
 def terminal_test(board):
     return all(all(cell != EMPTY for cell in row) for row in board)
+
 
 def get_valid_moves(board, player):
     valid_moves = []
@@ -79,6 +83,7 @@ def get_valid_moves(board, player):
                 valid_moves.append((row, col))
     return valid_moves
 
+
 def heuristic_weak(board, player):
     black_score, white_score = get_score(board)
     if player == BLACK:
@@ -86,12 +91,12 @@ def heuristic_weak(board, player):
     else:
         return white_score - black_score
 
+
 def Min_Max_Alpha_Beta_Heuristic_Pruning(board, depth, player, alpha, beta, maximizing_player):
     if depth == 0 or terminal_test(board):
         return heuristic_weak(board, player), 0
     
     valid_moves = get_valid_moves(board, player)
-    
     if maximizing_player:
         max_val = float('-inf')
         best_move = None
@@ -103,7 +108,7 @@ def Min_Max_Alpha_Beta_Heuristic_Pruning(board, depth, player, alpha, beta, maxi
             if evaluation > max_val:
                 max_val = evaluation
                 best_move = move
-                
+
             alpha = max(alpha, evaluation)
             if beta <= alpha:
                 break
@@ -135,6 +140,7 @@ def get_min_max_move(board, player, depth):
     else:
         return None
     
+
 def play_othello():
     board = initialize_board()
     current_player = BLACK
@@ -142,7 +148,7 @@ def play_othello():
         print_board(board)
         print("Jugador actual:", "X" if current_player == BLACK else "O")
         
-        if current_player == WHITE:
+        if current_player == BLACK:
             row, col = get_min_max_move(board, current_player, 3)
         else:
             while True:
@@ -169,6 +175,7 @@ def play_othello():
             else:
                 print("Empate.")
             break
+
 
 if __name__ == "__main__":
     play_othello()
