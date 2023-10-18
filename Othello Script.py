@@ -60,5 +60,10 @@ def make_move(board, player, row, col):
                     board[flip_row][flip_col] = player
     return True
 
+def get_score(board):
+    black_score = sum(row.count(BLACK) for row in board)
+    white_score = sum(row.count(WHITE) for row in board)
+    return black_score, white_score
+
 if __name__ == "__main__":
     print_board(initialize_board())
