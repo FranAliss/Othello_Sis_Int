@@ -78,5 +78,35 @@ def get_valid_moves(board, player):
 
 def heuristic():
     pass
+
+def Min_Max_Alpha_Beta_Heuristic_Pruning(board, depth, player, alpha, beta, maximizing_player):
+    if depth == 0 or terminal_test(board):
+        return heuristic_weak(board, player)
+    
+    valid_moves = get_valid_moves(board, player)
+    
+    if maximizing_player:
+        max_eval = float('-inf')
+        for move in valid_moves:
+            new_board = copy.deepcopy(board)
+            make_move(new_board, player, move[0], move[1])
+            evaluation = Min_Max_Alpha_Beta_Heuristic_Pruning(new_board, depth - 1, player, alpha, beta, False)
+            max_eval = max(max_eval, evaluation)
+            alpha = max(alpha, evaluation)
+            if beta <= alpha:
+                break
+        return max_eval
+    else:
+        min_eval = float('inf')
+        for move in valid_moves:
+            new_board = copy.deepcopy(board)
+            make_move(new_board, -player, move[0], move[1])
+            evaluation = Min_Max_Alpha_Beta_Heuristic_Pruning(new_board, depth - 1, player, alpha, beta, True)
+            min_eval = min(min_eval, evaluation)
+            beta = min(beta, evaluation)
+            if beta <= alpha:
+                break
+        return min_eval
+
 if __name__ == "__main__":
     print_board(initialize_board())
