@@ -108,5 +108,57 @@ def Min_Max_Alpha_Beta_Heuristic_Pruning(board, depth, player, alpha, beta, maxi
                 break
         return min_eval
 
+
+def get_best_move(board, player, depth):
+    valid_moves = get_valid_moves(board, player)
+    best_move = valid_moves[0]
+    best_eval = float('-inf')
+    
+    for move in valid_moves:
+        new_board = copy.deepcopy(board)
+        make_move(new_board, player, move[0], move[1])
+        evaluation = Min_Max_Alpha_Beta_Heuristic_Pruning(new_board, depth, player, float('-inf'), float('inf'), False)
+        if evaluation > best_eval:
+            best_eval = evaluation
+            best_move = move
+    
+    return best_move
+
+def play_othello():
+    board = initialize_board()
+    current_player = BLACK
+    while True:
+        print_board(board)
+        print("Jugador actual:", "Negras" if current_player == BLACK else "Blancas")
+        
+        if current_player == BLACK:
+            row, col = get_best_move(board, current_player, 3)
+        else:
+            while True:
+                try:
+                    row = int(input("Fila: "))
+                    col = int(input("Columna: "))
+                    if is_valid_move(board, current_player, row, col):
+                        break
+                    else:
+                        print("Movimiento no válido. Inténtalo de nuevo.")
+                except ValueError:
+                    print("Entrada no válida. Introduce números válidos.")
+        
+        make_move(board, current_player, row, col)
+        current_player = -current_player
+        
+        if terminal_test(board):
+            print_board(board)
+            black_score, white_score = get_score(board)
+            if black_score > white_score:
+                print("Negras ganan.")
+            elif white_score > black_score:
+                print("Blancas ganan.")
+            else:
+                print("Empate.")
+            break
+
+
 if __name__ == "__main__":
     print_board(initialize_board())
