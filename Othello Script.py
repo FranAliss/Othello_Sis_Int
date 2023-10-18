@@ -41,6 +41,24 @@ def is_valid_move(board, player, row, col):
                 return True
     return False
 
+def make_move(board, player, row, col):
+    if not is_valid_move(board, player, row, col):
+        return False
+    board[row][col] = player
+    for differenceRow in [-1, 0, 1]:
+        for differenceColumn in [-1, 0, 1]:
+            if differenceRow == 0 and differenceColumn == 0:
+                continue
+            newRow, newColumn = row + differenceRow, col + differenceColumn
+            to_flip = []
+            while 0 <= newRow < N and 0 <= newColumn < N and board[newRow][newColumn] == -player:
+                to_flip.append((newRow, newColumn))
+                newRow += differenceRow
+                newColumn += differenceColumn
+            if 0 <= newRow < N and 0 <= newColumn < N and board[newRow][newColumn] == player:
+                for flip_row, flip_col in to_flip:
+                    board[flip_row][flip_col] = player
+    return True
 
 if __name__ == "__main__":
     print_board(initialize_board())
