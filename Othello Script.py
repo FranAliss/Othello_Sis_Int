@@ -26,5 +26,21 @@ def print_board(board):
                 row += "O "
         print(row)
 
+def is_valid_move(board, player, row, col):
+    if board[row][col] != EMPTY:
+        return False
+    for differencRow in [-1, 0, 1]:
+        for differencColumn in [-1, 0, 1]:
+            if differencRow == 0 and differencColumn == 0:
+                continue
+            newRow, newColumn = row + differencRow, col + differencColumn
+            while 0 <= newRow < N and 0 <= newColumn < N and board[newRow][newColumn] == -player:
+                newRow += differencRow
+                newColumn += differencColumn
+            if 0 <= newRow < N and 0 <= newColumn < N and board[newRow][newColumn] == player:
+                return True
+    return False
+
+
 if __name__ == "__main__":
     print_board(initialize_board())
