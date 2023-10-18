@@ -65,5 +65,18 @@ def get_score(board):
     white_score = sum(row.count(WHITE) for row in board)
     return black_score, white_score
 
+def terminal_test(board):
+    return all(all(cell != EMPTY for cell in row) for row in board)
+
+def get_valid_moves(board, player):
+    valid_moves = []
+    for row in range(N):
+        for col in range(N):
+            if is_valid_move(board, player, row, col):
+                valid_moves.append((row, col))
+    return valid_moves
+
+def heuristic():
+    pass
 if __name__ == "__main__":
     print_board(initialize_board())
