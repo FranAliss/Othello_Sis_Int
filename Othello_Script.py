@@ -147,7 +147,7 @@ def get_min_max_move(board, player, depth):
     valid_moves = get_valid_moves(board, player)
 
     if len(valid_moves) > 0:
-        eval, best_move = Min_Max_Alpha_Beta_Heuristic_Pruning(board, depth, player, float('-inf'), float('inf'), True)
+        eval, best_move = Min_Max_Alpha_Beta_Heuristic_Pruning(board, depth, player, float('-inf'), float('inf'), False)
         return best_move
     else:
         return None, 
@@ -160,8 +160,11 @@ def play_othello_vs_AI():
         print_board(board)
         print("Jugador actual:", "X" if current_player == BLACK else "O")
         
-        if current_player == BLACK:
+        if current_player == WHITE:
             row, col = get_min_max_move(board, current_player, 5)
+            if row == -1 and col == -1:
+                current_player = -current_player
+                continue
         else:
             while True:
                 try:
@@ -170,6 +173,9 @@ def play_othello_vs_AI():
                     if is_valid_move(get_valid_moves(board,current_player), (row,col)):
                         break
                     else:
+                        if len(get_valid_moves(board,current_player)) > 0:
+                            current_player = -current_player
+                            continue
                         print("Movimiento no válido. Inténtalo de nuevo.")
                 except ValueError:
                     print("Entrada no válida. Introduce números válidos.")
@@ -200,9 +206,12 @@ def play_othello_vs_player():
                 try:
                     row = int(input("Fila: "))
                     col = int(input("Columna: "))
-                    if is_valid_move(get_valid_moves(board,current_playerplayer), (row,col)):
+                    if is_valid_move(get_valid_moves(board,current_player), (row,col)):
                         break
                     else:
+                        if len(get_valid_moves(board,current_player)) > 0:
+                            current_player = -current_player
+                            continue
                         print("Movimiento no válido. Inténtalo de nuevo.")
                 except ValueError:
                     print("Entrada no válida. Introduce números válidos.")
@@ -216,6 +225,9 @@ def play_othello_vs_player():
                     if is_valid_move(get_valid_moves(board,current_player), (row,col)):
                         break
                     else:
+                        if len(get_valid_moves(board,current_player)) > 0:
+                            current_player = -current_player
+                            continue
                         print("Movimiento no válido. Inténtalo de nuevo.")
                 except ValueError:
                     print("Entrada no válida. Introduce números válidos.")
@@ -231,9 +243,15 @@ def play_othello_vs_player():
                 print("Blancas ganan.")
             else:
                 print("Empate.")
-            break
+                break
 
 
 if __name__ == "__main__":
-    play_othello_vs_AI()
-    #play_othello_vs_player()
+    opcion = 0
+    print("1. PLAYER VS IA")
+    print("2. PLAYER VS PLAYER")
+    opcion = int(input("Seleccione el modo de juego: "))
+    if opcion == 1:
+        play_othello_vs_AI()
+    else:
+        play_othello_vs_player()
