@@ -6,6 +6,7 @@ EMPTY = 0
 BLACK = 1
 WHITE = -1
 
+
 def initialize_board():
     board = [[EMPTY] * N for _ in range(N)]
     board[3][3] = BLACK
@@ -13,6 +14,7 @@ def initialize_board():
     board[4][3] = WHITE
     board[4][4] = BLACK
     return board
+
 
 def print_board(board):
     print("  0 1 2 3 4 5 6 7")
@@ -28,25 +30,44 @@ def print_board(board):
         print(row)
 
 
-def is_valid_move(board, player, row, col):
-    if board[row][col] != EMPTY:
-        return False
-    for differencRow in [-1, 0, 1]:
-        for differencColumn in [-1, 0, 1]:
-            if differencRow == 0 and differencColumn == 0:
-                continue
-            newRow, newColumn = row + differencRow, col + differencColumn
-            while 0 <= newRow < N and 0 <= newColumn < N and board[newRow][newColumn] == -player:
-                newRow += differencRow
-                newColumn += differencColumn
-            if 0 <= newRow < N and 0 <= newColumn < N and board[newRow][newColumn] == player:
-                return True
+def is_valid_move(valid_moves, move):
+    if move in valid_moves:
+        return True
+    return False
+
+
+def get_player_tokens(board, player):
+    player_tokens = []
+    for row in range(N):
+        for column in range(N):
+            if board[row][column] == player:
+                player_tokens.append((row, column))
+    return player_tokens
+
+def get_valid_moves(board, player):
+    valid_moves = []
+    for token in get_player_tokens(board, player):
+        for differenceRow in [-1, 0, 1]: 
+            for differenceColumn in [-1, 0, 1]:
+                if differenceRow == 0 and differenceColumn == 0:
+                    continue
+                adyRow = token[0] + differenceRow
+                adyCol = token[1] + differenceColumn
+                
+                if 0 <= adyRow < N and 0 <= adyCol < N and board[adyRow][adyCol] == -player:
+                    while 0 <= adyRow < N and 0 <= adyCol < N and board[adyRow][adyCol] == -player:
+                        adyRow += differenceRow
+                        adyCol += differenceColumn
+                        
+                    if 0 <= adyRow < N and 0 <= adyCol < N and board[adyRow][adyCol] == EMPTY:
+                        valid_moves.append((adyRow, adyCol))
+    return valid_moves
 
 
 def make_move(board, player, move):
     row = move[0]
     col = move[1]
-    if not is_valid_move(board, player, row, col):
+    if not is_valid_move(get_valid_moves(board,player), move):
         return False
     board[row][col] = player
     for differenceRow in [-1, 0, 1]:
@@ -73,15 +94,6 @@ def get_score(board):
 
 def terminal_test(board):
     return all(all(cell != EMPTY for cell in row) for row in board)
-
-
-def get_valid_moves(board, player):
-    valid_moves = []
-    for row in range(N):
-        for col in range(N):
-            if is_valid_move(board, player, row, col):
-                valid_moves.append((row, col))
-    return valid_moves
 
 
 def heuristic_weak(board, player):
@@ -138,7 +150,7 @@ def get_min_max_move(board, player, depth):
         eval, best_move = Min_Max_Alpha_Beta_Heuristic_Pruning(board, depth, player, float('-inf'), float('inf'), True)
         return best_move
     else:
-        return None
+        return None, 
     
 
 def play_othello_vs_AI():
@@ -149,13 +161,13 @@ def play_othello_vs_AI():
         print("Jugador actual:", "X" if current_player == BLACK else "O")
         
         if current_player == BLACK:
-            row, col = get_min_max_move(board, current_player, 3)
+            row, col = get_min_max_move(board, current_player, 5)
         else:
             while True:
                 try:
                     row = int(input("Fila: "))
                     col = int(input("Columna: "))
-                    if is_valid_move(board, current_player, row, col):
+                    if is_valid_move(get_valid_moves(board,current_player), (row,col)):
                         break
                     else:
                         print("Movimiento no válido. Inténtalo de nuevo.")
@@ -188,7 +200,7 @@ def play_othello_vs_player():
                 try:
                     row = int(input("Fila: "))
                     col = int(input("Columna: "))
-                    if is_valid_move(board, current_player, row, col):
+                    if is_valid_move(get_valid_moves(board,current_playerplayer), (row,col)):
                         break
                     else:
                         print("Movimiento no válido. Inténtalo de nuevo.")
@@ -201,7 +213,7 @@ def play_othello_vs_player():
                 try:
                     row = int(input("Fila: "))
                     col = int(input("Columna: "))
-                    if is_valid_move(board, current_player, row, col):
+                    if is_valid_move(get_valid_moves(board,current_player), (row,col)):
                         break
                     else:
                         print("Movimiento no válido. Inténtalo de nuevo.")
@@ -223,5 +235,5 @@ def play_othello_vs_player():
 
 
 if __name__ == "__main__":
-    #play_othello_vs_AI()
-    play_othello_vs_player()
+    play_othello_vs_AI()
+    #play_othello_vs_player()
