@@ -141,7 +141,7 @@ def get_min_max_move(board, player, depth):
         return None
     
 
-def play_othello():
+def play_othello_vs_AI():
     board = initialize_board()
     current_player = BLACK
     while True:
@@ -176,6 +176,52 @@ def play_othello():
                 print("Empate.")
             break
 
+def play_othello_vs_player():
+    board = initialize_board()
+    current_player = BLACK
+    while True:
+        print_board(board)
+        print("Jugador actual:", "X" if current_player == BLACK else "O")
+        
+        if current_player == BLACK:
+            while True:
+                try:
+                    row = int(input("Fila: "))
+                    col = int(input("Columna: "))
+                    if is_valid_move(board, current_player, row, col):
+                        break
+                    else:
+                        print("Movimiento no válido. Inténtalo de nuevo.")
+                except ValueError:
+                    print("Entrada no válida. Introduce números válidos.")
+            make_move(board, current_player, (row,col))
+            current_player = -current_player
+        else:
+            while True:
+                try:
+                    row = int(input("Fila: "))
+                    col = int(input("Columna: "))
+                    if is_valid_move(board, current_player, row, col):
+                        break
+                    else:
+                        print("Movimiento no válido. Inténtalo de nuevo.")
+                except ValueError:
+                    print("Entrada no válida. Introduce números válidos.")
+            make_move(board, current_player, (row,col))
+            current_player = -current_player
+        
+        if terminal_test(board):
+            print_board(board)
+            black_score, white_score = get_score(board)
+            if black_score > white_score:
+                print("Negras ganan.")
+            elif white_score > black_score:
+                print("Blancas ganan.")
+            else:
+                print("Empate.")
+            break
+
 
 if __name__ == "__main__":
-    play_othello()
+    #play_othello_vs_AI()
+    play_othello_vs_player()
