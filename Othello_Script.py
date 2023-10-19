@@ -103,10 +103,32 @@ def heuristic_weak(board, player):
     else:
         return white_score - black_score
 
+def second_heuristic(board, player):
+    value = 0
+    for i in range(8):
+        for j in range(8):
+            if board[i][j] == player:
+                if (i == 0 and j == 0) or (i == 7 and j == 7) or \
+                   (i == 0 and j == 7) or (i == 7 and j == 0):
+                    value += 20
+                elif (i == 3 and j == 3) or (i == 3 and j == 4) or \
+                     (i == 4 and j == 3) or (i == 4 and j == 4):
+                    value += 5
+                elif (i == 0 and j == 1) or (i == 1 and j == 0) or \
+                     (i == 7 and j == 1) or (i == 6 and j == 0) or \
+                     (i == 0 and j == 6) or (i == 1 and j == 7) or \
+                     (i == 7 and j == 6) or (i == 6 and j == 7) or \
+                     (i == 1 and j == 1) or (i == 6 and j == 6) or \
+                     (i == 6 and j == 1) or (i == 1 and j == 6):
+                    value += 0
+                else:
+                    value += 10
+    return value
+
 
 def Min_Max_Alpha_Beta_Heuristic_Pruning(board, depth, player, alpha, beta, maximizing_player):
     if depth == 0 or terminal_test(board):
-        return heuristic_weak(board, player), 0
+        return second_heuristic(board, player), 0
     
     valid_moves = get_valid_moves(board, player)
     if maximizing_player:
@@ -148,9 +170,10 @@ def get_min_max_move(board, player, depth):
 
     if len(valid_moves) > 0:
         eval, best_move = Min_Max_Alpha_Beta_Heuristic_Pruning(board, depth, player, float('-inf'), float('inf'), False)
+        print(best_move)
         return best_move
     else:
-        return None, 
+        return (-1, -1)
     
 
 def play_othello_vs_AI():
@@ -161,19 +184,20 @@ def play_othello_vs_AI():
         print("Jugador actual:", "X" if current_player == BLACK else "O")
         
         if current_player == WHITE:
-            row, col = get_min_max_move(board, current_player, 5)
+            row, col = get_min_max_move(board, current_player, 3)
             if row == -1 and col == -1:
+                print("BLANCAS SIN MOVIMIENTOS")
                 current_player = -current_player
                 continue
         else:
             while True:
-                try:
+                try: 
                     row = int(input("Fila: "))
                     col = int(input("Columna: "))
                     if is_valid_move(get_valid_moves(board,current_player), (row,col)):
                         break
                     else:
-                        if len(get_valid_moves(board,current_player)) > 0:
+                        if len(get_valid_moves(board,current_player)) == 0:
                             current_player = -current_player
                             continue
                         print("Movimiento no válido. Inténtalo de nuevo.")
@@ -209,7 +233,7 @@ def play_othello_vs_player():
                     if is_valid_move(get_valid_moves(board,current_player), (row,col)):
                         break
                     else:
-                        if len(get_valid_moves(board,current_player)) > 0:
+                        if len(get_valid_moves(board,current_player)) == 0:
                             current_player = -current_player
                             continue
                         print("Movimiento no válido. Inténtalo de nuevo.")
@@ -225,7 +249,7 @@ def play_othello_vs_player():
                     if is_valid_move(get_valid_moves(board,current_player), (row,col)):
                         break
                     else:
-                        if len(get_valid_moves(board,current_player)) > 0:
+                        if len(get_valid_moves(board,current_player)) == 0:
                             current_player = -current_player
                             continue
                         print("Movimiento no válido. Inténtalo de nuevo.")
