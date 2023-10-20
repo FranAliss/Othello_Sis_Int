@@ -1,7 +1,7 @@
 import copy
 
 N = 4
-
+COUNTER = 0
 EMPTY = 0
 BLACK = 1
 WHITE = -1
@@ -90,6 +90,8 @@ def terminal_test(board):
 
 
 def Min_Max(board, player, maximizing_player):
+    global COUNTER
+    COUNTER += 1
     if terminal_test(board):
         return get_score(board)[1]
     
@@ -115,11 +117,11 @@ def Min_Max(board, player, maximizing_player):
                 
         return best_move
 
-def get_min_max_move(board, player, depth):
+def get_min_max_move(board, player):
     valid_moves = get_valid_moves(board, player)
 
     if len(valid_moves) > 0:
-        best_move = Min_Max(board, player, False)
+        best_move= Min_Max(board, player, False)
         print(best_move)
         if best_move == 0:
             return get_valid_moves(board, player)[0]
@@ -136,7 +138,7 @@ def play_othello_vs_AI():
         print("Actual player:", "X" if current_player == BLACK else "O")
         
         if current_player == WHITE:
-            row, col = get_min_max_move(board, current_player, 3)
+            row, col = get_min_max_move(board, current_player)
             if row == -1 and col == -1:
                 print("O HAS NO MOVEMENTS")
                 current_player = -current_player
@@ -144,8 +146,12 @@ def play_othello_vs_AI():
         else:
             while True:
                 try: 
+                    print("mis movs",get_valid_moves(board,current_player))
                     row = int(input("ROW: "))
                     col = int(input("COLUMN: "))
+                    if get_valid_moves(board,current_player) == []:
+                        current_player = -current_player
+                        continue
                     if is_valid_move(get_valid_moves(board,current_player), (row,col)):
                         break
                     else:
@@ -162,6 +168,7 @@ def play_othello_vs_AI():
         if terminal_test(board):
             print_board(board)
             black_score, white_score = get_score(board)
+            print("States: ", COUNTER)
             if black_score > white_score:
                 print("X Won.")
             elif white_score > black_score:
