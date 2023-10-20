@@ -147,7 +147,7 @@ def play_othello_vs_AI():
         else:
             while True:
                 try: 
-                    print("mis movs",get_valid_moves(board,current_player))
+                    print("My Movements: ",get_valid_moves(board,current_player))
                     row = int(input("ROW: "))
                     col = int(input("COLUMN: "))
                     if get_valid_moves(board,current_player) == []:
