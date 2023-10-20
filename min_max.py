@@ -1,4 +1,5 @@
 import copy
+import time
 
 N = 4
 COUNTER = 0
@@ -151,7 +152,7 @@ def play_othello_vs_AI():
                     col = int(input("COLUMN: "))
                     if get_valid_moves(board,current_player) == []:
                         current_player = -current_player
-                        continue
+                        break
                     if is_valid_move(get_valid_moves(board,current_player), (row,col)):
                         break
                     else:
@@ -180,4 +181,8 @@ def play_othello_vs_AI():
 if __name__ == "__main__":
     opcion = 0
     print(" PLAYER VS IA")
+    start_time = time.time()
     play_othello_vs_AI()
+    end_time = time.time()
+    execution_time = end_time - start_time
+    print(f"Execution Time: {execution_time} seconds")
