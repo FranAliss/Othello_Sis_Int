@@ -88,6 +88,13 @@ def get_score(board):
 def terminal_test(board):
     return all(all(cell != EMPTY for cell in row) for row in board)
 
+def heuristic_weak(board, player):
+    black_score, white_score = get_score(board)
+    if player == BLACK:
+        return black_score - white_score
+    else:
+        return white_score - black_score
+
 def heuristic_look_for_corners_and_center(board, player):
     value = 0
     for i in range(8):
