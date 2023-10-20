@@ -6,7 +6,6 @@ EMPTY = 0
 BLACK = 1
 WHITE = -1
 
-
 def initialize_board():
     board = [[EMPTY] * N for _ in range(N)]
     board[3][3] = BLACK
@@ -14,7 +13,6 @@ def initialize_board():
     board[4][3] = WHITE
     board[4][4] = BLACK
     return board
-
 
 def print_board(board):
     print("  0 1 2 3 4 5 6 7")
@@ -29,12 +27,10 @@ def print_board(board):
                 row += "O "
         print(row)
 
-
 def is_valid_move(valid_moves, move):
     if move in valid_moves:
         return True
     return False
-
 
 def get_player_tokens(board, player):
     player_tokens = []
@@ -63,7 +59,6 @@ def get_valid_moves(board, player):
                         valid_moves.append((adyRow, adyCol))
     return valid_moves
 
-
 def make_move(board, player, move):
     row = move[0]
     col = move[1]
@@ -85,50 +80,72 @@ def make_move(board, player, move):
                     board[flip_row][flip_col] = player
     return True
 
-
 def get_score(board):
     black_score = sum(row.count(BLACK) for row in board)
     white_score = sum(row.count(WHITE) for row in board)
     return black_score, white_score
 
-
 def terminal_test(board):
     return all(all(cell != EMPTY for cell in row) for row in board)
 
-
-def heuristic_weak(board, player):
-    black_score, white_score = get_score(board)
-    if player == BLACK:
-        return black_score - white_score
-    else:
-        return white_score - black_score
-
-def second_heuristic(board, player):
+def heuristic_look_for_corners_and_center(board, player):
     value = 0
     for i in range(8):
         for j in range(8):
             if board[i][j] == player:
                 if (i == 0 and j == 0) or (i == 7 and j == 7) or \
                    (i == 0 and j == 7) or (i == 7 and j == 0):
-                    value += 20
+                    value += 20 # Esquinas valen 20
                 elif (i == 3 and j == 3) or (i == 3 and j == 4) or \
                      (i == 4 and j == 3) or (i == 4 and j == 4):
-                    value += 5
+                    value += 5 # centros valen 10
                 elif (i == 0 and j == 1) or (i == 1 and j == 0) or \
                      (i == 7 and j == 1) or (i == 6 and j == 0) or \
                      (i == 0 and j == 6) or (i == 1 and j == 7) or \
                      (i == 7 and j == 6) or (i == 6 and j == 7) or \
                      (i == 1 and j == 1) or (i == 6 and j == 6) or \
                      (i == 6 and j == 1) or (i == 1 and j == 6):
-                    value += 0
+                    value += 0 # adyacentes de las esquinas valen 0
                 else:
-                    value += 10
+                    value += 10 # cualquier otra casilla vale 10
     return value
 
+def heuristic_look_for_corners_and_borders(board, turn):
+    value = 0
+    for i in range(8):
+        for j in range(8):
+            if board[(i, j)] == turn:
+                if (i == 0 and j == 0) or (i == 7 and j == 7) or \
+                   (i == 0 and j == 7) or (i == 7 and j == 0):
+                    value += 50 #esquinas valen 50
+                elif (i == 3 and j == 3) or (i == 3 and j == 4) or \
+                     (i == 4 and j == 3) or (i == 4 and j == 4):
+                    pass # centros no valen
+                elif (i == 0 and j == 1) or (i == 1 and j == 0) or \
+                     (i == 7 and j == 1) or (i == 6 and j == 0) or \
+                     (i == 0 and j == 6) or (i == 1 and j == 7) or \
+                     (i == 7 and j == 6) or (i == 6 and j == 7):
+                     value -= 1 #adyacentes valen -1
+                elif (i == 1 and j == 1) or (i == 6 and j == 6) or \
+                     (i == 6 and j == 1) or (i == 1 and j == 6):
+                     value -= 10 #adyacentes en fila valen -10
+                elif (i == 0 and j == 2) or (i == 0 and j == 5) or \
+                     (i == 7 and j == 2) or (i == 7 and j == 5) or \
+                     (i == 2 and j == 0) or (i == 5 and j == 0) or \
+                     (i == 2 and j == 7) or (i == 5 and j == 7):
+                     value += 5 # bordes columnas
+                elif (i == 0 and j == 3) or (i == 0 and j == 4) or \
+                     (i == 7 and j == 3) or (i == 7 and j == 4) or \
+                     (i == 3 and j == 0) or (i == 4 and j == 0) or \
+                     (i == 3 and j == 7) or (i == 4 and j == 7):
+                     value += 2 # Bordes filas
+                else:
+                     value += 1 # Lo demas vale 1
+    return value
 
-def Min_Max_Alpha_Beta_Heuristic_Pruning(board, depth, player, alpha, beta, maximizing_player):
+def Min_Max_Alpha_Beta_Heuristic_Pruning_heuristic_1(board, depth, player, alpha, beta, maximizing_player):
     if depth == 0 or terminal_test(board):
-        return second_heuristic(board, player), 0
+        return heuristic_look_for_corners_and_center(board, player), 0
     
     valid_moves = get_valid_moves(board, player)
     if maximizing_player:
@@ -137,7 +154,7 @@ def Min_Max_Alpha_Beta_Heuristic_Pruning(board, depth, player, alpha, beta, maxi
         for move in valid_moves:
             new_board = copy.deepcopy(board)
             make_move(new_board, player, move)
-            evaluation, best_move = Min_Max_Alpha_Beta_Heuristic_Pruning(new_board, depth - 1, player, alpha, beta, False)
+            evaluation, best_move = Min_Max_Alpha_Beta_Heuristic_Pruning_heuristic_1(new_board, depth - 1, player, alpha, beta, False)
             
             if evaluation > max_val:
                 max_val = evaluation
@@ -153,7 +170,7 @@ def Min_Max_Alpha_Beta_Heuristic_Pruning(board, depth, player, alpha, beta, maxi
         for move in valid_moves:
             new_board = copy.deepcopy(board)
             make_move(new_board, -player, move)
-            evaluation, best_move = Min_Max_Alpha_Beta_Heuristic_Pruning(new_board, depth - 1, player, alpha, beta, True)
+            evaluation, best_move = Min_Max_Alpha_Beta_Heuristic_Pruning_heuristic_1(new_board, depth - 1, player, alpha, beta, True)
 
             if evaluation < min_val:
                 min_val = evaluation
@@ -164,17 +181,69 @@ def Min_Max_Alpha_Beta_Heuristic_Pruning(board, depth, player, alpha, beta, maxi
                 break
         return min_val, best_move
 
+def Min_Max_Alpha_Beta_Heuristic_Pruning_heuristic_2(board, depth, player, alpha, beta, maximizing_player):
+    if depth == 0 or terminal_test(board):
+        return heuristic_look_for_corners_and_center(board, player), 0
+    
+    valid_moves = get_valid_moves(board, player)
+    if maximizing_player:
+        max_val = float('-inf')
+        best_move = None
+        for move in valid_moves:
+            new_board = copy.deepcopy(board)
+            make_move(new_board, player, move)
+            evaluation, best_move = Min_Max_Alpha_Beta_Heuristic_Pruning_heuristic_2(new_board, depth - 1, player, alpha, beta, False)
+            
+            if evaluation > max_val:
+                max_val = evaluation
+                best_move = move
+
+            alpha = max(alpha, evaluation)
+            if beta <= alpha:
+                break
+        return max_val, best_move
+    else:
+        min_val = float('inf')
+        best_move = None
+        for move in valid_moves:
+            new_board = copy.deepcopy(board)
+            make_move(new_board, -player, move)
+            evaluation, best_move = Min_Max_Alpha_Beta_Heuristic_Pruning_heuristic_2(new_board, depth - 1, player, alpha, beta, True)
+
+            if evaluation < min_val:
+                min_val = evaluation
+                best_move = move
+
+            beta = min(beta, evaluation)
+            if beta <= alpha:
+                break
+        return min_val, best_move
 
 def get_min_max_move(board, player, depth):
     valid_moves = get_valid_moves(board, player)
 
     if len(valid_moves) > 0:
-        eval, best_move = Min_Max_Alpha_Beta_Heuristic_Pruning(board, depth, player, float('-inf'), float('inf'), False)
+        eval, best_move = Min_Max_Alpha_Beta_Heuristic_Pruning_heuristic_1(board, depth, player, float('-inf'), float('inf'), False)
         print(best_move)
-        return best_move
+        if best_move == 0:
+            return get_valid_moves(board, player)[0]
+        else:
+            return best_move
     else:
         return (-1, -1)
-    
+
+def get_min_max_move_heuristic_2(board, player, depth):
+    valid_moves = get_valid_moves(board, player)
+
+    if len(valid_moves) > 0:
+        eval, best_move = Min_Max_Alpha_Beta_Heuristic_Pruning_heuristic_2(board, depth, player, float('-inf'), float('inf'), False)
+        print(best_move)
+        if best_move == 0:
+            return get_valid_moves(board, player)[0]
+        else:
+            return best_move
+    else:
+        return (-1, -1)
 
 def play_othello_vs_AI():
     board = initialize_board()
@@ -269,13 +338,53 @@ def play_othello_vs_player():
                 print("Empate.")
                 break
 
+def play_othello_AI_vs_AI():
+    board = initialize_board()
+    current_player = BLACK
+    while True:
+        print_board(board)
+        print("Jugador actual:", "X" if current_player == BLACK else "O")
+        
+        if current_player == WHITE:
+            row, col = get_min_max_move(board, current_player, 3)
+            if row == -1 and col == -1:
+                print("BLANCAS SIN MOVIMIENTOS")
+                current_player = -current_player
+                continue
+        else:
+            row, col = get_min_max_move_heuristic_2(board, current_player, 3)
+            if row == -1 and col == -1:
+                print("NEGRAS SIN MOVIMIENTOS")
+                current_player = -current_player
+                continue
+
+        make_move(board, current_player, (row,col))
+        current_player = -current_player
+        
+        if terminal_test(board):
+            print_board(board)
+            black_score, white_score = get_score(board)
+            if black_score > white_score:
+                print("Negras (ROBOCOP) ganan. (HEURISTICA 2)")
+                print("Cantidad de X:", get_score(board)[0])
+                print("Cantidad de O:", get_score(board)[1])
+            elif white_score > black_score:
+                print("Blancas (TERMINATOR) ganan. (HEURISTICA 1)")
+                print("Cantidad de X:", get_score(board)[0])
+                print("Cantidad de O:", get_score(board)[1])
+            else:
+                print("Nao Nao.")
+            break
 
 if __name__ == "__main__":
     opcion = 0
     print("1. PLAYER VS IA")
     print("2. PLAYER VS PLAYER")
+    print("3. ROBOCOP 'X' VS TERMINATOR 'O' -> AI vs AI jajaj")
     opcion = int(input("Seleccione el modo de juego: "))
     if opcion == 1:
         play_othello_vs_AI()
-    else:
+    elif opcion == 2:
         play_othello_vs_player()
+    else:
+        play_othello_AI_vs_AI()

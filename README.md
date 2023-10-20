@@ -3,5 +3,3 @@
 ### Installation Guide
 - First clone the repository.
 - Run 'Othello_Script.py' archive.
-
-## Graphs and relevant information
