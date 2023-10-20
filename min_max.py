@@ -123,7 +123,7 @@ def get_min_max_move(board, player):
 
     if len(valid_moves) > 0:
         best_move= Min_Max(board, player, False)
-        print(best_move)
+        print("IA move: ", best_move)
         if best_move == 0:
             return get_valid_moves(board, player)[0]
         else:
@@ -148,6 +148,9 @@ def play_othello_vs_AI():
             while True:
                 try: 
                     print("My Movements: ",get_valid_moves(board,current_player))
+                    if len(get_valid_moves(board,current_player)) == 0:
+                        print("You have no movements available")
+                        break
                     row = int(input("ROW: "))
                     col = int(input("COLUMN: "))
                     if get_valid_moves(board,current_player) == []:
@@ -155,11 +158,7 @@ def play_othello_vs_AI():
                         break
                     if is_valid_move(get_valid_moves(board,current_player), (row,col)):
                         break
-                    else:
-                        if len(get_valid_moves(board,current_player)) == 0:
-                            current_player = -current_player
-                            continue
-                        print("Invalid move. Try again.")
+                    print("Invalid move. Try again.")
                 except ValueError:
                     print("Invalid entry. Enter valid numbers.")
         

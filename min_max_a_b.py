@@ -89,21 +89,20 @@ def get_score(board):
 def terminal_test(board):
     return all(all(cell != EMPTY for cell in row) for row in board)
 
-def Min_Max_alpha_beta(board, player, alpha, beta, maximizing_player):
+def Min_Max_Alpha_Beta(board, player, alpha, beta, maximizing_player):
     global COUNTER
     COUNTER += 1
     if terminal_test(board):
-        return get_score(board)[1]
-
+        return get_score(board)[1], 0
+    
     valid_moves = get_valid_moves(board, player)
-
     if maximizing_player:
         max_val = float('-inf')
         best_move = None
         for move in valid_moves:
             new_board = copy.deepcopy(board)
             make_move(new_board, player, move)
-            evaluation, best_move = Min_Max_alpha_beta(board, player, alpha, beta, maximizing_player)
+            evaluation, best_move = Min_Max_Alpha_Beta(new_board, player, alpha, beta, False)
             
             if evaluation > max_val:
                 max_val = evaluation
@@ -119,7 +118,7 @@ def Min_Max_alpha_beta(board, player, alpha, beta, maximizing_player):
         for move in valid_moves:
             new_board = copy.deepcopy(board)
             make_move(new_board, -player, move)
-            evaluation, best_move = Min_Max_alpha_beta(board, player, alpha, beta, maximizing_player)
+            evaluation, best_move = Min_Max_Alpha_Beta(new_board, player, alpha, beta, True)
 
             if evaluation < min_val:
                 min_val = evaluation
@@ -129,13 +128,13 @@ def Min_Max_alpha_beta(board, player, alpha, beta, maximizing_player):
             if beta <= alpha:
                 break
         return min_val, best_move
-
+    
 def get_min_max_move(board, player):
     valid_moves = get_valid_moves(board, player)
 
     if len(valid_moves) > 0:
-        best_move= Min_Max_alpha_beta(board, player, float('-inf'), float('inf'), False)
-        print(best_move)
+        _, best_move= Min_Max_Alpha_Beta(board, player, float('-inf'), float('inf'), False)
+        print("IA move: ", best_move)
         if best_move == 0:
             return get_valid_moves(board, player)[0]
         else:
@@ -160,18 +159,14 @@ def play_othello_vs_AI():
             while True:
                 try: 
                     print("My Movements: ",get_valid_moves(board,current_player))
+                    if len(get_valid_moves(board,current_player)) == 0:
+                        print("You have no movements available")
+                        break
                     row = int(input("ROW: "))
                     col = int(input("COLUMN: "))
-                    if get_valid_moves(board,current_player) == []:
-                        current_player = -current_player
-                        break
                     if is_valid_move(get_valid_moves(board,current_player), (row,col)):
                         break
-                    else:
-                        if len(get_valid_moves(board,current_player)) == 0:
-                            current_player = -current_player
-                            continue
-                        print("Invalid move. Try again.")
+                    print("Invalid move. Try again.")
                 except ValueError:
                     print("Invalid entry. Enter valid numbers.")
         

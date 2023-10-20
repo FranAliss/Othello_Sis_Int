@@ -269,16 +269,16 @@ def play_othello_vs_AI():
                 continue
         else:
             while True:
-                try: 
+                try:
+                    print("My Movements: ",get_valid_moves(board,current_player))
+                    if len(get_valid_moves(board,current_player)) == 0:
+                        print("You have no movements available")
+                        break
                     row = int(input("ROW: "))
                     col = int(input("COLUMN: "))
                     if is_valid_move(get_valid_moves(board,current_player), (row,col)):
                         break
-                    else:
-                        if len(get_valid_moves(board,current_player)) == 0:
-                            current_player = -current_player
-                            continue
-                        print("Invalid move. Try again.")
+                    print("Invalid move. Try again.")
                 except ValueError:
                     print("Invalid entry. Enter valid numbers.")
         
