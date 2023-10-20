@@ -102,19 +102,19 @@ def heuristic_look_for_corners_and_center(board, player):
             if board[i][j] == player:
                 if (i == 0 and j == 0) or (i == 7 and j == 7) or \
                    (i == 0 and j == 7) or (i == 7 and j == 0):
-                    value += 20 # Esquinas valen 20
+                    value += 20 # Cornes value = 20
                 elif (i == 3 and j == 3) or (i == 3 and j == 4) or \
                      (i == 4 and j == 3) or (i == 4 and j == 4):
-                    value += 5 # centros valen 10
+                    value += 5 # Centers value = 5
                 elif (i == 0 and j == 1) or (i == 1 and j == 0) or \
                      (i == 7 and j == 1) or (i == 6 and j == 0) or \
                      (i == 0 and j == 6) or (i == 1 and j == 7) or \
                      (i == 7 and j == 6) or (i == 6 and j == 7) or \
                      (i == 1 and j == 1) or (i == 6 and j == 6) or \
                      (i == 6 and j == 1) or (i == 1 and j == 6):
-                    value += 0 # adyacentes de las esquinas valen 0
+                    value += 0 # positions adjacent to corners, value = 0
                 else:
-                    value += 10 # cualquier otra casilla vale 10
+                    value += 10 # any other position, value = 10
     return value
 
 def heuristic_look_for_corners_and_borders(board, turn):
@@ -124,31 +124,33 @@ def heuristic_look_for_corners_and_borders(board, turn):
             if board[(i, j)] == turn:
                 if (i == 0 and j == 0) or (i == 7 and j == 7) or \
                    (i == 0 and j == 7) or (i == 7 and j == 0):
-                    value += 50 #esquinas valen 50
+                    value += 50 #corners, value = 50
                 elif (i == 3 and j == 3) or (i == 3 and j == 4) or \
                      (i == 4 and j == 3) or (i == 4 and j == 4):
-                    pass # centros no valen
+                    pass # centers no value
                 elif (i == 0 and j == 1) or (i == 1 and j == 0) or \
                      (i == 7 and j == 1) or (i == 6 and j == 0) or \
                      (i == 0 and j == 6) or (i == 1 and j == 7) or \
                      (i == 7 and j == 6) or (i == 6 and j == 7):
-                     value -= 1 #adyacentes valen -1
+                     value -= 1 #positions adjacent to corners, value = -1
                 elif (i == 1 and j == 1) or (i == 6 and j == 6) or \
                      (i == 6 and j == 1) or (i == 1 and j == 6):
-                     value -= 10 #adyacentes en fila valen -10
+                     value -= 10 #adjacent diagonal to the corner, value = -10
                 elif (i == 0 and j == 2) or (i == 0 and j == 5) or \
                      (i == 7 and j == 2) or (i == 7 and j == 5) or \
                      (i == 2 and j == 0) or (i == 5 and j == 0) or \
                      (i == 2 and j == 7) or (i == 5 and j == 7):
-                     value += 5 # bordes columnas
+                     value += 5 # border column, value = 5
                 elif (i == 0 and j == 3) or (i == 0 and j == 4) or \
                      (i == 7 and j == 3) or (i == 7 and j == 4) or \
                      (i == 3 and j == 0) or (i == 4 and j == 0) or \
                      (i == 3 and j == 7) or (i == 4 and j == 7):
-                     value += 2 # Bordes filas
+                     value += 2 # border row, value = 2
                 else:
-                     value += 1 # Lo demas vale 1
+                     value += 1 # any other position, value = 1
     return value
+
+
 
 def Min_Max_Alpha_Beta_Heuristic_Pruning_heuristic_1(board, depth, player, alpha, beta, maximizing_player):
     if depth == 0 or terminal_test(board):
@@ -257,28 +259,28 @@ def play_othello_vs_AI():
     current_player = BLACK
     while True:
         print_board(board)
-        print("Jugador actual:", "X" if current_player == BLACK else "O")
+        print("Actual player:", "X" if current_player == BLACK else "O")
         
         if current_player == WHITE:
             row, col = get_min_max_move(board, current_player, 3)
             if row == -1 and col == -1:
-                print("BLANCAS SIN MOVIMIENTOS")
+                print("O HAS NO MOVEMENTS")
                 current_player = -current_player
                 continue
         else:
             while True:
                 try: 
-                    row = int(input("Fila: "))
-                    col = int(input("Columna: "))
+                    row = int(input("ROW: "))
+                    col = int(input("COLUMN: "))
                     if is_valid_move(get_valid_moves(board,current_player), (row,col)):
                         break
                     else:
                         if len(get_valid_moves(board,current_player)) == 0:
                             current_player = -current_player
                             continue
-                        print("Movimiento no válido. Inténtalo de nuevo.")
+                        print("Invalid move. Try again.")
                 except ValueError:
-                    print("Entrada no válida. Introduce números válidos.")
+                    print("Invalid entry. Enter valid numbers.")
         
         make_move(board, current_player, (row,col))
         current_player = -current_player
@@ -287,11 +289,11 @@ def play_othello_vs_AI():
             print_board(board)
             black_score, white_score = get_score(board)
             if black_score > white_score:
-                print("Negras ganan.")
+                print("X Won.")
             elif white_score > black_score:
-                print("Blancas ganan.")
+                print("O Won.")
             else:
-                print("Empate.")
+                print("Tie.")
             break
 
 def play_othello_vs_player():
@@ -299,38 +301,38 @@ def play_othello_vs_player():
     current_player = BLACK
     while True:
         print_board(board)
-        print("Jugador actual:", "X" if current_player == BLACK else "O")
+        print("Actual player:", "X" if current_player == BLACK else "O")
         
         if current_player == BLACK:
             while True:
                 try:
-                    row = int(input("Fila: "))
-                    col = int(input("Columna: "))
+                    row = int(input("ROW: "))
+                    col = int(input("COLUMN: "))
                     if is_valid_move(get_valid_moves(board,current_player), (row,col)):
                         break
                     else:
                         if len(get_valid_moves(board,current_player)) == 0:
                             current_player = -current_player
                             continue
-                        print("Movimiento no válido. Inténtalo de nuevo.")
+                        print("Invalid move. Try again.")
                 except ValueError:
-                    print("Entrada no válida. Introduce números válidos.")
+                    print("Invalid entry. Enter valid numbers.")
             make_move(board, current_player, (row,col))
             current_player = -current_player
         else:
             while True:
                 try:
-                    row = int(input("Fila: "))
-                    col = int(input("Columna: "))
+                    row = int(input("ROW: "))
+                    col = int(input("COLUMN: "))
                     if is_valid_move(get_valid_moves(board,current_player), (row,col)):
                         break
                     else:
                         if len(get_valid_moves(board,current_player)) == 0:
                             current_player = -current_player
                             continue
-                        print("Movimiento no válido. Inténtalo de nuevo.")
+                        print("Invalid move. Try again.")
                 except ValueError:
-                    print("Entrada no válida. Introduce números válidos.")
+                    print("Invalid entry. Enter valid numbers.")
             make_move(board, current_player, (row,col))
             current_player = -current_player
         
@@ -338,11 +340,11 @@ def play_othello_vs_player():
             print_board(board)
             black_score, white_score = get_score(board)
             if black_score > white_score:
-                print("Negras ganan.")
+                print("X won.")
             elif white_score > black_score:
-                print("Blancas ganan.")
+                print("O won.")
             else:
-                print("Empate.")
+                print("Tie.")
                 break
 
 def play_othello_AI_vs_AI():
@@ -350,18 +352,18 @@ def play_othello_AI_vs_AI():
     current_player = BLACK
     while True:
         print_board(board)
-        print("Jugador actual:", "X" if current_player == BLACK else "O")
+        print("Actual player:", "X" if current_player == BLACK else "O")
         
         if current_player == WHITE:
             row, col = get_min_max_move(board, current_player, 3)
             if row == -1 and col == -1:
-                print("BLANCAS SIN MOVIMIENTOS")
+                print("O HAS NO MOVEMENTS")
                 current_player = -current_player
                 continue
         else:
             row, col = get_min_max_move_heuristic_2(board, current_player, 3)
             if row == -1 and col == -1:
-                print("NEGRAS SIN MOVIMIENTOS")
+                print("X HAS NO MOVEMENTS")
                 current_player = -current_player
                 continue
 
@@ -372,15 +374,15 @@ def play_othello_AI_vs_AI():
             print_board(board)
             black_score, white_score = get_score(board)
             if black_score > white_score:
-                print("Negras (ROBOCOP) ganan. (HEURISTICA 2)")
-                print("Cantidad de X:", get_score(board)[0])
-                print("Cantidad de O:", get_score(board)[1])
+                print("X (ROBOCOP) WON. (HEURISTIC 2)")
+                print("Total X tokens:", get_score(board)[0])
+                print("Total O tokens:", get_score(board)[1])
             elif white_score > black_score:
-                print("Blancas (TERMINATOR) ganan. (HEURISTICA 1)")
-                print("Cantidad de X:", get_score(board)[0])
-                print("Cantidad de O:", get_score(board)[1])
+                print("O (TERMINATOR) WON. (HEURISTIC 1)")
+                print("Total X tokens:", get_score(board)[0])
+                print("Total O tokens:", get_score(board)[1])
             else:
-                print("Nao Nao.")
+                print("Tie.")
             break
 
 if __name__ == "__main__":
@@ -388,7 +390,7 @@ if __name__ == "__main__":
     print("1. PLAYER VS IA")
     print("2. PLAYER VS PLAYER")
     print("3. ROBOCOP 'X' VS TERMINATOR 'O' -> AI vs AI jajaj")
-    opcion = int(input("Seleccione el modo de juego: "))
+    opcion = int(input("Select a gamemode: "))
     if opcion == 1:
         play_othello_vs_AI()
     elif opcion == 2:
