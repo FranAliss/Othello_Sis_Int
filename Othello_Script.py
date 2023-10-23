@@ -15,6 +15,7 @@ def initialize_board():
     return board
 
 def print_board(board):
+    print("  A B C D E F G H")
     print("  0 1 2 3 4 5 6 7")
     for i in range(N):
         row = str(i) + " "
@@ -121,7 +122,7 @@ def heuristic_look_for_corners_and_borders(board, turn):
     value = 0
     for i in range(8):
         for j in range(8):
-            if board[(i, j)] == turn:
+            if board[i][j] == turn:
                 if (i == 0 and j == 0) or (i == 7 and j == 7) or \
                    (i == 0 and j == 7) or (i == 7 and j == 0):
                     value += 50 #corners, value = 50
@@ -192,7 +193,7 @@ def Min_Max_Alpha_Beta_Heuristic_Pruning_heuristic_1(board, depth, player, alpha
 
 def Min_Max_Alpha_Beta_Heuristic_Pruning_heuristic_2(board, depth, player, alpha, beta, maximizing_player):
     if depth == 0 or terminal_test(board):
-        return heuristic_look_for_corners_and_center(board, player), 0
+        return heuristic_look_for_corners_and_borders(board, player), 0
     
     valid_moves = get_valid_moves(board, player)
     if maximizing_player:
